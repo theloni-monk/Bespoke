@@ -21,10 +21,7 @@ module top_level(
     .clk(clk_100mhz),
     .tx(uart_txd),
     .rx(uart_rxd),
-    .val3_out(y),
-    .val4_out(x),
-    .val1_in(sw[0] ? fsos : quot),
-    .val2_in(sw[0] ? finvsqrt : rem)
+    //...
   );
 
 endmodule // top_level
