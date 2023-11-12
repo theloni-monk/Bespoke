@@ -1,44 +1,37 @@
-`default_nettype none
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none // prevents system from inferring an undeclared logic (good practice)
 
 module VecFIFO #(
-  parameter  VecElements = 4,
-  parameter  Depth       = 3 )(
-  input  logic clk_in,
-  input  logic rst_in,
-  input  logic writeEn,
-  input  logic [VecElements-1:0][7:0] writeData,
-  input  logic readEn,
-  output logic [VecElements-1:0][7:0] readData,
-  output logic dataValid,
-  output logic full,
-  output logic empty
+  parameter  VecElements,
+  parameter  BytesPerWrite,
+  parameter  BytesPerRead,
+  parameter  Depth )(
+  input  wire clk_in,
+  input wire rst_in,
+  input wire wr_en,
+  input wire [BytesPerWrite-1:0][7:0] wr_data,
+  input wire rd_en,
+  output logic [BytesPerRead-1:0][7:0] rd_data 
 );
-localparam PtrWidth  = $clog2(Depth)
-logic [DataWidth-1:0] mem[Depth];
-logic [PtrWidth-1:0] wr_ptr;
-logic [PtrWidth-1:0] rd_ptr;
 
+logic [Depth*VecElements*8-1:0] mem;
+logic [$clog2(Depth*VecElements*8)-1:0] wr_ptr;
+logic [$clog2(Depth*VecElements*8)-1:0] rd_ptr;
 
 always_ff @(posedge clk_in) begin
     if (rst_in) begin
-      wr_ptr <= '0;
-      rd_ptr <= '0;
+      wr_ptr <= 0;
+      rd_ptr <= 0;
+      for(int i = 0; i<Depth*VecElements; i=i+1) mem[i +: 8] = 0;
     end else begin
-      wr_ptr <= writeEn ? wr_ptr + 1 : wr_ptr;
-      rd_ptr <= readEn ? rd_ptr + 1 : rd_ptr;
+      wr_ptr <= wr_en ? wr_ptr + (8*BytesPerWrite) : wr_ptr;
+      rd_ptr <= rd_en ? rd_ptr + (8*BytesPerRead) : rd_ptr;
     end
-    mem[wr_ptr[PtrWidth-1:0]] <= writeData;
+    mem[wr_ptr +: 8*BytesPerWrite] <= wr_data;
 end
 
-assign readData = mem[rd_ptr[PtrWidth-1:0]];
-assign empty = (wr_ptr[PtrWidth] == rd_ptr[PtrWidth]) && (wr_ptr[PtrWidth-1:0] == rd_ptr[PtrWidth-1:0]);
-assign full  = (wr_ptr[PtrWidth] != rd_ptr[PtrWidth]) && (wr_ptr[PtrWidth-1:0] == rd_ptr[PtrWidth-1:0]);
+assign rd_data = mem[rd_ptr +: 8*BytesPerRead];
 
 endmodule
-
-
-endmodule
-
 
 `default_nettype wire

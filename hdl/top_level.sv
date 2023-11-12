@@ -20,7 +20,7 @@ module top_level(
   manta intf (
     .clk(clk_100mhz),
     .tx(uart_txd),
-    .rx(uart_rxd),
+    .rx(uart_rxd)
     //...
   );
 
