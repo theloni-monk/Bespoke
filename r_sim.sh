@@ -1,0 +1,1 @@
+./remote/r.py build.py xsim_run.tcl hdl/BasicVecFIFO.sv hdl/ReLU.sv sim/relu_tb.sv obj

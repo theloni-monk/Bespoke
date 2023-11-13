@@ -15,8 +15,8 @@ module ReLU
     output logic out_vector_valid
 );
 
-typedef enum logic [1:0] {WAITING, LOADING, PROCESSING} mod_state;
-mod_state state;
+typedef enum logic [1:0] {WAITING, LOADING, PROCESSING} relu_state;
+relu_state state;
 logic [WorkingRegs-1:0][7:0] working_regs;
 // assumes single-cycle fifo
 logic [$clog2(InVecLength)-1:0] vec_in_idx;
