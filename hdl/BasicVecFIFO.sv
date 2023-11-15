@@ -10,6 +10,7 @@ module VecFIFO #(
   input wire rst_in,
   input wire wr_en,
   input wire [BytesPerWrite-1:0][7:0] wr_data,
+  input wire wrap_rd,
   input wire rd_en,
   output logic [BytesPerRead-1:0][7:0] rd_data 
 );
@@ -25,9 +26,9 @@ always_ff @(posedge clk_in) begin
       for(int i = 0; i<Depth*VecElements; i=i+1) mem[i +: 8] = 0;
     end else begin
       wr_ptr <= wr_en ? wr_ptr + (8*BytesPerWrite) : wr_ptr;
-      rd_ptr <= rd_en ? rd_ptr + (8*BytesPerRead) : rd_ptr;
+      rd_ptr <= wrap_rd ? 0 : (rd_en ? rd_ptr + (8*BytesPerRead) : rd_ptr);
     end
-    mem[wr_ptr +: 8*BytesPerWrite] <= wr_data;
+    if(wr_en) mem[wr_ptr +: 8*BytesPerWrite] <= wr_data;
 end
 
 assign rd_data = mem[rd_ptr +: 8*BytesPerRead];
