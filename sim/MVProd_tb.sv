@@ -7,9 +7,9 @@ module mvprod_tb();
   logic sys_rst;
 
   logic wr_en_0 = 0;
-  logic [1:0][7:0] wr_data_0;
+  logic [7:0] wr_data_0;
   logic rd_en_0 = 0;
-  logic [3:0][7:0] rd_data_0;
+  logic [1:0][7:0] rd_data_0;
   logic rd_ptr_rst;
   VecFIFO #(.VecElements(8), .BytesPerRead(2), .BytesPerWrite(1), .Depth(1)) fifo_0(
     .clk_in(clk_100mhz),
@@ -22,16 +22,18 @@ module mvprod_tb();
   );
 
   logic wr_en_1 = 0;
-  logic [3:0][7:0] wr_data_1;
+  logic [7:0] wr_data_1;
   logic rd_en_1 = 0;
-  logic [3:0][7:0] rd_data_1;
-  VecFIFO #(.VecElements(8), .BytesPerRead(4), .BytesPerWrite(1), .Depth(1)) fifo_1 (
+  logic [7:0] rd_data_1;
+  logic wrap_rd_1;
+  VecFIFO #(.VecElements(8), .BytesPerRead(1), .BytesPerWrite(1), .Depth(1)) fifo_1 (
     .clk_in(clk_100mhz),
     .rst_in(sys_rst),
     .wr_en(wr_en_1),
     .wr_data(wr_data_1),
     .rd_en(rd_en_1),
-    .rd_data(rd_data_1)
+    .rd_data(rd_data_1),
+    .wrap_rd(wrap_rd_1)
   );
 
   logic mv_data_ready = 0;
@@ -74,14 +76,15 @@ module mvprod_tb();
     mv_data_ready = 1;
     #10;
     mv_data_ready = 0;
-    #800;
-    rd_en_1 = 1;
-    for (byte i = 0; i<2; i= i+ 1)begin
-      $display("read chunk %d read byte %b", i, rd_data_1[0]);
-      $display("read chunk %d read byte %b", i, rd_data_1[1]);
-      $display("read chunk %d read byte %b", i, rd_data_1[2]);
-      $display("read chunk %d read byte %b", i, rd_data_1[3]);
+    #445;
+    rd_en_1 = 0;
+    wrap_rd_1 = 1;
+    #10; 
+    wrap_rd_1 = 0;
+    for (byte i = 0; i<8; i = i+ 1)begin
+      $display("read chunk %d read byte %b", i, rd_data_1);
       #10;
+      rd_en_1 = 1;
     end
     rd_en_1 = 0;
     #100;
