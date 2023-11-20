@@ -32,15 +32,14 @@ logic row_op_complete;
 assign row_op_complete = vec_in_idx == 0;
 logic all_op_complete;
 assign all_op_complete = vec_out_idx == 0;
-
-//FIXME: ram not aligning with .mem file
- xilinx_single_port_ram_read_first #(
-  .RAM_WIDTH(WorkingRegs*8),                       
+assign out_vector_valid = all_op_complete;
+xilinx_single_port_ram_read_first #(
+  .RAM_WIDTH(WorkingRegs*8),
   .RAM_DEPTH(InVecLength*OutVecLength/WorkingRegs),
-  .RAM_PERFORMANCE("LOW_LATENCY"), 
-  .INIT_FILE(WeightFile)) weight_ram ( 
+  .RAM_PERFORMANCE("LOW_LATENCY"),
+  .INIT_FILE(WeightFile)) weight_ram (
   .addra(weight_ptr),
-  .dina(24'd0),
+  .dina(0),
   .clka(clk_in),
   .wea(1'd0),
   .ena(1'd1),
@@ -82,6 +81,7 @@ always_ff @(posedge clk_in) begin
       end
     end else if(state == INIT) begin
       vec_in_idx <= WorkingRegs;
+      vec_out_idx <= 1;
       weight_ptr <= 0;
       working_regs <= in_data;
       req_chunk_ptr_rst <= 0;
@@ -91,30 +91,37 @@ always_ff @(posedge clk_in) begin
     end else if(state == ACCUMULATING) begin
       req_chunk_out <= 0;
       req_chunk_ptr_rst <= 0;
-      req_chunk_in <= 1;
-
       working_regs <= in_data;
-
       weight_ptr <= weight_ptr + 1;
-
       if(row_op_complete) begin
-        req_chunk_ptr_rst <= 1;
+        req_chunk_in <= 0;
+        req_chunk_ptr_rst <= ~all_op_complete;
         state <= FLUSHING;
       end else begin
+        req_chunk_in <= 1;
         req_chunk_ptr_rst <= 0;
         vec_in_idx <= vec_in_idx + WorkingRegs;
       end
-      //FIXME: not accumulating
-      accumulator <= accumulator + dot; 
-    end else if(state==FLUSHING) begin 
+      accumulator <= accumulator + dot;
+    end else if(state==FLUSHING) begin
       working_regs <= 0;
       req_chunk_ptr_rst <= 0;
       req_chunk_out <= 1;
       write_out_data <= accumulator + dot;
-      if(all_op_complete) state <= in_data_ready ? INIT : WAITING;
+      if(all_op_complete) begin
+        if(in_data_ready)begin
+          vec_in_idx <= 0;
+          vec_out_idx <= 1;
+          working_regs <= 0;
+          req_chunk_in <= 0;
+          weight_ptr <= 0;
+          state <= INIT;
+        end else state <= WAITING;
+      end
       else begin
         state <= ACCUMULATING;
         accumulator <= 0;
+        req_chunk_in <= 1;
         vec_out_idx <= vec_out_idx + 1;
         vec_in_idx <= WorkingRegs;
       end
