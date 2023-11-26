@@ -21,7 +21,8 @@ typedef enum logic [2:0] {WAITING, INIT, ACCUMULATING, FLUSHING} mvprod_state;
 mvprod_state state;
 
 logic [$clog2(InVecLength*OutVecLength/WorkingRegs)-1:0] weight_ptr;
-logic signed [WorkingRegs-1:0][7:0] working_regs;
+logic signed [WorkingRegs-1:0][7:0] vector_regs;
+logic signed [WorkingRegs-1:0][7:0] product_regs;
 logic signed [7:0] dot;
 logic signed [7:0] accumulator;
 logic signed [WorkingRegs-1:0][7:0] weight_regs;
@@ -32,7 +33,7 @@ logic row_op_complete;
 assign row_op_complete = vec_in_idx == 0;
 logic all_op_complete;
 assign all_op_complete = vec_out_idx == 0;
-assign out_vector_valid = all_op_complete;
+//assign out_vector_valid = all_op_complete;
 xilinx_single_port_ram_read_first #(
   .RAM_WIDTH(WorkingRegs*8),
   .RAM_DEPTH(InVecLength*OutVecLength/WorkingRegs),
@@ -48,18 +49,21 @@ xilinx_single_port_ram_read_first #(
   .douta(weight_regs)
 );
 
-//TODO: optimize with adder tree
 always_comb begin
-  dot = working_regs[WorkingRegs-1] * weight_regs[0];
-  for(integer i = 1; i< WorkingRegs; i = i+1) dot = dot + (working_regs[WorkingRegs-i-1]*weight_regs[i]);
+  for(integer i = 0; i < WorkingRegs; i = i+1) product_regs[i] = (vector_regs[WorkingRegs-1-i] * weight_regs[i]);
 end
+AdderTree #(.Elements(WorkingRegs)) atree (
+  .in(product_regs),
+  .out(dot)
+);
 
 always_ff @(posedge clk_in) begin
   if(rst_in) begin
     vec_in_idx <= 0;
-    vec_out_idx <= 0;
+    vec_out_idx <= 1;
     weight_ptr <= 0;
     accumulator <= 0;
+    out_vector_valid <= 0;
     state <= WAITING;
     req_chunk_ptr_rst <= 0;
   end else begin
@@ -67,23 +71,26 @@ always_ff @(posedge clk_in) begin
       if(in_data_ready) begin
         vec_in_idx <= 0;
         vec_out_idx <= 1;
-        working_regs <= 0;
+        vector_regs <= 0;
         req_chunk_in <= 0;
         weight_ptr <= 0;
         state <= INIT;
       end else begin
         weight_ptr <= 0;
+        vec_out_idx <= 1;
         req_chunk_in <= 0;
         req_chunk_out <= 0;
         for(int i = 0; i<WorkingRegs; i=i+1) begin
-          working_regs[i] = -8'sd1; // sentinal value
+          vector_regs[i] = -8'sd1; // sentinal value
         end
       end
+      out_vector_valid <= 0;
     end else if(state == INIT) begin
+      out_vector_valid <= 0;
       vec_in_idx <= WorkingRegs;
       vec_out_idx <= 1;
       weight_ptr <= 0;
-      working_regs <= in_data;
+      vector_regs <= in_data;
       req_chunk_ptr_rst <= 0;
       req_chunk_in <=  1;
       req_chunk_out <= 0;
@@ -91,7 +98,7 @@ always_ff @(posedge clk_in) begin
     end else if(state == ACCUMULATING) begin
       req_chunk_out <= 0;
       req_chunk_ptr_rst <= 0;
-      working_regs <= in_data;
+      vector_regs <= in_data;
       weight_ptr <= weight_ptr + 1;
       if(row_op_complete) begin
         req_chunk_in <= 0;
@@ -104,15 +111,16 @@ always_ff @(posedge clk_in) begin
       end
       accumulator <= accumulator + dot;
     end else if(state==FLUSHING) begin
-      working_regs <= 0;
+      vector_regs <= 0;
       req_chunk_ptr_rst <= 0;
       req_chunk_out <= 1;
       write_out_data <= accumulator + dot;
       if(all_op_complete) begin
+        out_vector_valid <= 1;
         if(in_data_ready)begin
           vec_in_idx <= 0;
           vec_out_idx <= 1;
-          working_regs <= 0;
+          vector_regs <= 0;
           req_chunk_in <= 0;
           weight_ptr <= 0;
           state <= INIT;
