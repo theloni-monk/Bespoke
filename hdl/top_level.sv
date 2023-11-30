@@ -17,12 +17,12 @@ module top_level(
   always_ff @(posedge clk_100mhz) begin
   end
 
-  manta intf (
-    .clk(clk_100mhz),
-    .tx(uart_txd),
-    .rx(uart_rxd)
-    //...
-  );
+  // manta intf (
+  //   .clk(clk_100mhz),
+  //   .tx(uart_txd),
+  //   .rx(uart_rxd)
+  //   //...
+  // );
 
 endmodule // top_level
 

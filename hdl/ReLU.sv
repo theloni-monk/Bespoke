@@ -30,7 +30,7 @@ assign write_out_data = working_regs;
 always_ff @(posedge clk_in) begin
   if(rst_in) begin
       vec_in_idx <= 0;
-      vec_out_idx <= 0;
+      vec_out_idx <= WorkingRegs;
       state <= WAITING;
   end else begin
     if(state == WAITING) begin
@@ -38,9 +38,11 @@ always_ff @(posedge clk_in) begin
           vec_in_idx <= WorkingRegs;
           vec_out_idx <= WorkingRegs;
           working_regs <= 0;
+          req_chunk_out <= 0;
           req_chunk_in <= 1;
           state <= PROCESSING;
         end else begin
+          vec_out_idx <= WorkingRegs;
           req_chunk_in <= 0;
           req_chunk_out <= 0;
           for(int i = 0; i<WorkingRegs; i=i+1) begin
@@ -55,6 +57,7 @@ always_ff @(posedge clk_in) begin
       vec_in_idx <= vec_in_idx + WorkingRegs;
       vec_out_idx <= vec_out_idx + WorkingRegs;
       if(vec_op_complete) begin
+        req_chunk_in <= in_data_ready;
         state <= in_data_ready ? PROCESSING : WAITING;
       end
     end

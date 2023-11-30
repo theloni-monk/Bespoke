@@ -50,7 +50,7 @@ end
 always_ff @(posedge clk_in) begin
   if(rst_in) begin
       vec_in_idx <= 0;
-      vec_out_idx <= 0;
+      vec_out_idx <= WorkingRegs;
       bias_ptr <= 0;
       state <= WAITING;
   end else begin
@@ -63,6 +63,7 @@ always_ff @(posedge clk_in) begin
           bias_ptr <= 1;
           state <= PROCESSING;
         end else begin
+          vec_out_idx <= WorkingRegs;
           req_chunk_in <= 0;
           req_chunk_out <= 0;
         end
