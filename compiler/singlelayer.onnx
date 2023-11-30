@@ -1,0 +1,130 @@
+pytorch2.0.1:‚[
+Á
+onnx::MatMul_0
+onnx::MatMul_7/linear/MatMul_output_0/linear/MatMul"MatMul2íC:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\linear.py(114): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1488): _slow_forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Local\Temp\ipykernel_24312\3150438279.py(14): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1488): _slow_forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(118): wrapper
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(127): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(1268): _get_trace_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(893): _trace_and_get_graph_from_model
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(989): _create_jit_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(1113): _model_to_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(1548): _export
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(506): export
+C:\Users\TheoA\AppData\Local\Temp\ipykernel_24312\3150438279.py(17): <module>
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3433): run_code
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3373): run_ast_nodes
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3194): run_cell_async
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\async_helpers.py(129): _pseudo_sync_runner
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(2995): _run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(2940): run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\zmqshell.py(530): run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\ipkernel.py(411): do_execute
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(729): execute_request
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(406): dispatch_shell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(499): process_one
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(510): dispatch_queue
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\events.py(80): _run
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\base_events.py(1905): _run_once
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\base_events.py(601): run_forever
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\tornado\platform\asyncio.py(215): start
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelapp.py(711): start
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\traitlets\config\application.py(1041): launch_instance
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel_launcher.py(17): <module>
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\runpy.py(87): _run_code
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\runpy.py(197): _run_module_as_main
+
+¾
+linear.bias
+/linear/MatMul_output_0/linear/Add_output_0/linear/Add"Add2íC:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\linear.py(114): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1488): _slow_forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Local\Temp\ipykernel_24312\3150438279.py(14): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1488): _slow_forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(118): wrapper
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(127): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(1268): _get_trace_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(893): _trace_and_get_graph_from_model
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(989): _create_jit_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(1113): _model_to_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(1548): _export
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(506): export
+C:\Users\TheoA\AppData\Local\Temp\ipykernel_24312\3150438279.py(17): <module>
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3433): run_code
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3373): run_ast_nodes
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3194): run_cell_async
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\async_helpers.py(129): _pseudo_sync_runner
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(2995): _run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(2940): run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\zmqshell.py(530): run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\ipkernel.py(411): do_execute
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(729): execute_request
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(406): dispatch_shell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(499): process_one
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(510): dispatch_queue
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\events.py(80): _run
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\base_events.py(1905): _run_once
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\base_events.py(601): run_forever
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\tornado\platform\asyncio.py(215): start
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelapp.py(711): start
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\traitlets\config\application.py(1041): launch_instance
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel_launcher.py(17): <module>
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\runpy.py(87): _run_code
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\runpy.py(197): _run_module_as_main
+
+ÿ
+/linear/Add_output_06
+/relu/Relu"Relu2ÑC:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\functional.py(1457): relu
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\activation.py(103): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1488): _slow_forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Local\Temp\ipykernel_24312\3150438279.py(14): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1488): _slow_forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(118): wrapper
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(127): forward
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\nn\modules\module.py(1501): _call_impl
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\jit\_trace.py(1268): _get_trace_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(893): _trace_and_get_graph_from_model
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(989): _create_jit_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(1113): _model_to_graph
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(1548): _export
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\torch\onnx\utils.py(506): export
+C:\Users\TheoA\AppData\Local\Temp\ipykernel_24312\3150438279.py(17): <module>
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3433): run_code
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3373): run_ast_nodes
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(3194): run_cell_async
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\async_helpers.py(129): _pseudo_sync_runner
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(2995): _run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\IPython\core\interactiveshell.py(2940): run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\zmqshell.py(530): run_cell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\ipkernel.py(411): do_execute
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(729): execute_request
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(406): dispatch_shell
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(499): process_one
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelbase.py(510): dispatch_queue
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\events.py(80): _run
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\base_events.py(1905): _run_once
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\asyncio\base_events.py(601): run_forever
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\tornado\platform\asyncio.py(215): start
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel\kernelapp.py(711): start
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\traitlets\config\application.py(1041): launch_instance
+C:\Users\TheoA\AppData\Roaming\Python\Python39\site-packages\ipykernel_launcher.py(17): <module>
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\runpy.py(87): _run_code
+c:\Users\TheoA\Anaconda3\envs\bespoke\lib\runpy.py(197): _run_module_as_main
+	torch_jit*#Blinear.biasJ`ŒX¾¨ì€¾‹"¾`ˆ<*™Bonnx::MatMul_7J€Í[H¾Ã´>XÏ{½L½õ=²ËŠ¾îu>q3ƒ>“Ä‰¾ 5ë;P$î=&Ül>â€L¾¸^d½@ÿš;Ÿ_¯>Ž	¬¾_§>Ðª½È™¦=ò	5>Æû+>ØÒn½$²>ô0¬=¢ñ(>`Ã=Øûß=ƒ*™>ºA>°n¾À—½¶¡n>Z
+onnx::MatMul_0
+
+
+b
+6
+
+
+B
