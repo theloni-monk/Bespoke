@@ -1,7 +1,7 @@
 from abc import ABC
 from dataclasses import dataclass
 from typing import List
-
+import numpy as np
 @dataclass
 class Var:
     name: str
@@ -10,6 +10,8 @@ class Var:
     tie_zero: bool
 
     def define(self):
+        if self.defined:
+            return ""
         self.defined = True
         return f"logic {f'[{self.num_bytes-1}:0][7:0]' if self.num_bytes else ''} {self.name};"
 
@@ -122,6 +124,7 @@ class MVProd(MLModule):
 
     out_vec_size: int
     weightfile: str
+    bram: np.ndarray
 
     req_chunk_ptr_rst: Var
 
@@ -154,6 +157,7 @@ class MVProd(MLModule):
 class Bias(MLModule):
 
     biasfile: str
+    bram: np.ndarray
 
     def __init__(self, inodes, onodes, instance_num):
         super().__init__(inodes, onodes, instance_num)

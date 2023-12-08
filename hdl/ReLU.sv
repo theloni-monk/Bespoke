@@ -1,9 +1,8 @@
-//WRITEME: ReLU
 `timescale 1ns / 1ps
 `default_nettype none // prevents system from inferring an undeclared logic (good practice)
 
-module ReLU 
-#(  parameter InVecLength, 
+module ReLU
+#(  parameter InVecLength,
     parameter WorkingRegs ) (
     input wire clk_in,
     input wire rst_in,
@@ -54,8 +53,8 @@ always_ff @(posedge clk_in) begin
         working_regs[i] <= $signed(in_data[i]) < 0 ? 0: in_data[i]; //ReLU
       end
       req_chunk_out <= 1;
-      vec_in_idx <= vec_in_idx + WorkingRegs;
-      vec_out_idx <= vec_out_idx + WorkingRegs;
+      vec_in_idx <= vec_in_idx + WorkingRegs >= InVecLength ? 0 : vec_in_idx + WorkingRegs;
+      vec_out_idx <= vec_out_idx + WorkingRegs >= InVecLength ? 0 : vec_out_idx + WorkingRegs;
       if(vec_op_complete) begin
         req_chunk_in <= in_data_ready;
         state <= in_data_ready ? PROCESSING : WAITING;

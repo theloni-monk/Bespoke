@@ -1,4 +1,3 @@
-//WRITEME: ReLU
 `timescale 1ns / 1ps
 `default_nettype none // prevents system from inferring an undeclared logic (good practice)
 
@@ -60,7 +59,7 @@ always_ff @(posedge clk_in) begin
           vec_out_idx <= WorkingRegs;
           req_chunk_in <= 1;
           req_chunk_out <= 1;
-          bias_ptr <= 1;
+          bias_ptr <= InVecLength/WorkingRegs > 1;
           state <= PROCESSING;
         end else begin
           vec_out_idx <= WorkingRegs;
@@ -68,8 +67,8 @@ always_ff @(posedge clk_in) begin
           req_chunk_out <= 0;
         end
     end else if (state == PROCESSING) begin
-      vec_in_idx <= vec_in_idx + WorkingRegs;
-      vec_out_idx <= vec_out_idx + WorkingRegs;
+      vec_in_idx <= vec_in_idx + WorkingRegs >= InVecLength ? 0 : vec_in_idx + WorkingRegs;
+      vec_out_idx <= vec_out_idx + WorkingRegs >= InVecLength ? 0 : vec_out_idx + WorkingRegs;
       if(vec_op_complete) begin
         req_chunk_in <= in_data_ready;
         state <= in_data_ready ? PROCESSING : WAITING;

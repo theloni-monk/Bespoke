@@ -23,7 +23,7 @@ always_ff @(posedge clk_in) begin
     if (rst_in) begin
       wr_ptr <= 0;
       rd_ptr <= 0;
-      for(int i = 0; i<Depth*VecElements; i=i+1) mem[i +: 8] = 0;
+      for(int i = 0; i<Depth*VecElements; i=i+1) mem[8*i +: 8] = 0;
     end else begin
       wr_ptr <= wr_en ? wr_ptr + (8*BytesPerWrite) : wr_ptr;
       rd_ptr <= wrap_rd ? rd_ptr - (VecElements * 8) : (rd_en ? rd_ptr + (8*BytesPerRead) : rd_ptr);

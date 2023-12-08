@@ -1,1 +1,1 @@
-//TODO: Dual-port BRAM based FIFO that reads only a few at a time but has
+//TODO: Dual-port BRAM based FIFO with byte masking

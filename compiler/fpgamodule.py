@@ -12,6 +12,19 @@ class FPGASpec():
     total_bram: int
     max_clock: int
 
+def gen_bram_file(path, read_bytes, data):
+    with open(path, 'w') as f:
+        if(len(data.shape) > 1):
+            for x in range(data.shape[0]): # row major
+                for y in range(data.shape[1] // read_bytes):
+                    for i in range(read_bytes):
+                        f.write(f'{int(data[x, y*read_bytes+i]):02x}')
+                    f.write('\n')
+        else:
+            for x in range(data.shape[0] // read_bytes):
+                for i in range(read_bytes):
+                    f.write(f'{int(data[x*read_bytes+i]):02x}')
+
 class FPGAModule():
 
     model: onnx.ModelProto
@@ -19,29 +32,32 @@ class FPGAModule():
     in_dim: int
     out_dim: int
     spec: FPGASpec
+    avail_bram: int
 
     clk: Var
     rst: Var
     in_data_ready: Var
     modules: List[MLModule]
 
-    def __init__(self, model, in_dim, out_dim, spec):
+    def __init__(self, model, spec):
         self.model = model
         self.clk = Var("clk_in", True, 0, False)
         self.rst = Var("rst_in", True, 0, False)
         self.spec = spec
-        self.in_data_ready = Var("in_data_ready_master", False, 0, False)
+        self.avail_bram = spec.total_bram
+        self.in_data_ready = Var("in_data_ready", True, 0, False)
 
     def alloc_bram(self):
         for mod in self.modules:
             if type(mod) == MVProd:
-                mod.weightfile = f"data/{mod.name}_dummy_wfile.mem"
+                mod.weightfile = f"data/{mod.name}_wfile.mem"
+                gen_bram_file(f"data/{mod.name}_wfile.mem", mod.working_regs, mod.bram)
+                self.avail_bram -= mod.bram.size * 8
             elif type(mod) == Bias:
-                mod.biasfile = f"data/{mod.name}_dummy_bfile.mem"
-
-    #WRITEME: keep track of initializer matricies and generate bram files
-    def gen_bram_files(self):
-        pass
+                mod.biasfile = f"data/{mod.name}_bfile.mem"
+                gen_bram_file(f"data/{mod.name}_bfile.mem", mod.working_regs, mod.bram)
+                self.avail_bram -= mod.bram.size * 8
+        assert self.avail_bram > 0, "Insufficient BRAM"
 
     def alloc_regs(self):
         num_ml_mods = (len(self.modules)-1)//2
@@ -63,24 +79,22 @@ class FPGAModule():
         input_fifo = self.modules[0]
         output_fifo = self.modules[-1]
         return f"""
-{self.clk.define()}
-{self.rst.define()}
 {input_fifo.systemverilog()}
 {output_fifo.systemverilog()}
-{self.in_data_ready.define()}
 module MLInference(
     input wire clk_in,
     input wire rst_in,
     input wire in_data_ready,
-    input wire signed [{input_fifo.bytes_per_read-1}:0][7:0] data_in,
-    output logic req_chunk_in,
-    output logic req_chunk_out,
-    output logic signed [{output_fifo.bytes_per_write-1}:0][7:0] data_out,
-    output logic out_data_ready,
-)
+    output logic out_data_ready
+);
   {'''
 '''.join([mod.systemverilog() for mod in self.modules[1:-1]])}
 endmodule;
+logic ml_inf_valid;
+MLInference ml_inf(
+    .clk_in(),
+    .rst_in(),
+    .in_data_ready(),
+    .out_data_ready(ml_inf_valid)
+);
 """
-    def make_brams(self, bram_path):
-        pass

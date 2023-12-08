@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
 `default_nettype none // prevents system from inferring an undeclared logic (good practice)
-//TODO: arbitarry vec lengths, not powers of 2
 module MVProd
 #(  parameter InVecLength, 
     parameter OutVecLength,
@@ -52,11 +51,19 @@ xilinx_single_port_ram_read_first #(
 always_comb begin
   for(integer i = 0; i < WorkingRegs; i = i+1) product_regs[i] = (vector_regs[WorkingRegs-1-i] * weight_regs[i]);
 end
+generate
+if(InVecLength & (InVecLength-1) == 0)
 AdderTree #(.Elements(WorkingRegs)) atree (
   .in(product_regs),
   .out(dot)
 );
-
+else begin
+  always_comb begin
+    dot = product_regs[0];
+    for (integer i = 1; i<WorkingRegs; i = i+1 ) dot = dot + product_regs[i];
+  end
+end
+endgenerate
 always_ff @(posedge clk_in) begin
   if(rst_in) begin
     vec_in_idx <= 0;
@@ -92,14 +99,15 @@ always_ff @(posedge clk_in) begin
       weight_ptr <= 0;
       vector_regs <= in_data;
       req_chunk_ptr_rst <= 0;
-      req_chunk_in <=  1;
+      req_chunk_in <=  InVecLength > WorkingRegs;
       req_chunk_out <= 0;
+      accumulator <= 0;
       state <= ACCUMULATING;
     end else if(state == ACCUMULATING) begin
       req_chunk_out <= 0;
       req_chunk_ptr_rst <= 0;
       vector_regs <= in_data;
-      weight_ptr <= weight_ptr + 1;
+      weight_ptr <= weight_ptr + 1 >= InVecLength*OutVecLength/WorkingRegs ? 0 : weight_ptr + 1;
       if(row_op_complete) begin
         req_chunk_in <= 0;
         req_chunk_ptr_rst <= ~all_op_complete;
@@ -107,13 +115,13 @@ always_ff @(posedge clk_in) begin
       end else begin
         req_chunk_in <= 1;
         req_chunk_ptr_rst <= 0;
-        vec_in_idx <= vec_in_idx + WorkingRegs;
+        vec_in_idx <= vec_in_idx + WorkingRegs >= InVecLength ? 0 : vec_in_idx + WorkingRegs;
       end
       accumulator <= accumulator + dot;
     end else if(state==FLUSHING) begin
       vector_regs <= 0;
       req_chunk_ptr_rst <= 0;
-      req_chunk_out <= 1;
+      req_chunk_out <= 1; 
       write_out_data <= accumulator + dot;
       if(all_op_complete) begin
         out_vector_valid <= 1;

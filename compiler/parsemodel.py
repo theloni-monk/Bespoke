@@ -1,6 +1,6 @@
 import onnx
 from collections import Counter
-
+import numpy as np
 from .fpgamodule import FPGAModule
 from . import ml_modules
 
@@ -10,14 +10,14 @@ def to_ml_module(nodename):
             "Relu": ml_modules.ReLU,
             "Add": ml_modules.Bias }[nodename]
 
-def parse_model(onnx_model, initdim, enddim, spec):
+def parse_model(onnx_model, initdim,  spec):
     weights = onnx_model.graph.initializer
     wnames = map(lambda w: w.name, weights)
     wdict = dict(zip(wnames, weights))
 
     instancecounter = Counter()
 
-    fpga_module = FPGAModule(initdim, onnx_model, enddim, spec)
+    fpga_module = FPGAModule(onnx_model, spec)
     currdim = initdim
 
     # shitty non-recursive construction
@@ -29,6 +29,8 @@ def parse_model(onnx_model, initdim, enddim, spec):
         instancecounter[node.op_type] += 1
         mod.in_vec_size = currdim
 
+        if node.op_type == "Add" or node.op_type == "MatMul":
+            mod.bram = onnx.numpy_helper.to_array(wdict[node.input[1]]).astype(np.int8).view(np.uint8)
         if node.op_type == "MatMul":
             newdim = wdict[node.input[1]].dims[-1]
             mod.out_vec_size = newdim
