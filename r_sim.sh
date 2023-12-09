@@ -1,1 +1,1 @@
-./remote/r.py build.py xsim_run.tcl hdl/* data/* sim/mvprod_tb.sv obj
+./remote/r.py build.py xsim_run.tcl hdl/* data/* sim/generated_integration_tb_0.sv obj

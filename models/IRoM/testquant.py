@@ -14,7 +14,6 @@ loss_fn = nn.L1Loss()
 training_data, testing_data, epochs, trainPath, trainLabelPath, testPath, testLabelPath = makeMagDataset(geometryVal=geometryVal, geomPath=geomPath, N=N, testPath0=testPath0, epochs0=epochs0, loocv=ll)
 test_dataloader = DataLoader(testing_data, batch_size=1, shuffle=True)
 
-testPath0 = 'data_agg/test'
 modelPath = 'SavedModels/Velocity/N'
 verboseFlag=False
 

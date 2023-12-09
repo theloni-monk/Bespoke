@@ -28,7 +28,7 @@ else:
   pass
   #save("vivado.log")
 
-proc = subprocess.Popen(f"{xelab} -svlog ./sim/mvprod_tb.sv --debug wave",
+proc = subprocess.Popen(f"{xelab} -svlog ./sim/generated_integration_tb_0.sv --debug wave",
 	shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 while True:
@@ -46,7 +46,7 @@ else:
   #save("vivado.log")
 
 
-proc = subprocess.Popen(f"{xsim} mvprod_tb -t xsim_run.tcl",
+proc = subprocess.Popen(f"{xsim} generated_integration_tb_0 -t xsim_run.tcl",
 	shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 while True:

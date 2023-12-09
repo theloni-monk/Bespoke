@@ -69,7 +69,6 @@ class NeuralNetworkSpeed(nn.Module):
         # Terminology is clunky because this is adapted from a classification example, hence 
         # the use of 'logits' even though we are doing regression.
         
-        # TODO -- tidy up variable names, usage, etc (see above)
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
@@ -79,7 +78,6 @@ class NeuralNetworkAngle(nn.Module):
     '''
     A general/generic Neural Network model class for use with Pytorch. 
     
-    TODO: include layer widths, types, and nonlinearities as inputs and dynamically allocate
           --- this will allow for custom classes rather than the clunky "if" statement used here. 
     '''
     def __init__(self, crosswire=False, fullAngles=True, geom=6):
@@ -125,11 +123,6 @@ class NeuralNetworkAngle(nn.Module):
                 )
 
     def forward(self, x):
-        # Method to propagate input (reading) through the network to get a prediction. 
-        # Terminology is clunky because this is adapted from a classification example, hence 
-        # the use of 'logits' even though we are doing regression.
-        
-        # TODO -- tidy up variable names, usage, etc (see above)
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
