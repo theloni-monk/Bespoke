@@ -1,7 +1,7 @@
 `default_nettype none
 `timescale 1ns/1ps
 /*
-This module was generated with Manta v0.0.5 on 09 Dec 2023 at 14:46:59 by TheoA
+This module was generated with Manta v0.0.5 on 10 Dec 2023 at 14:35:31 by TheoA
 
 If this breaks or if you've got spicy formal verification memes, contact fischerm [at] mit.edu
 
@@ -16,12 +16,12 @@ manta manta_inst (
     .rx(rx),
     .tx(tx),
     
-    .byte_in(byte_in), 
-    .in_trigger(in_trigger), 
-    .all_in_ready(all_in_ready), 
     .byte_out(byte_out), 
-    .out_trigger(out_trigger), 
-    .all_out_read(all_out_read));
+    .all_out_ready(all_out_ready), 
+    .byte_in(byte_in), 
+    .all_in_ready(all_in_ready), 
+    .pc_data_put(pc_data_put), 
+    .pc_data_req(pc_data_req));
 
 */
 
@@ -31,12 +31,12 @@ module manta (
     input wire rx,
     output reg tx,
     
-    input wire [7:0] byte_in,
-    input wire in_trigger,
-    input wire all_in_ready,
-    output reg [7:0] byte_out,
-    output reg out_trigger,
-    output reg all_out_read);
+    input wire [7:0] byte_out,
+    input wire all_out_ready,
+    output reg [7:0] byte_in,
+    output reg all_in_ready,
+    output reg pc_data_put,
+    output reg pc_data_req);
 
 
     uart_rx #(.CLOCKS_PER_BAUD(33)) urx (
@@ -70,12 +70,12 @@ module manta (
         .user_clk(clk),
     
         // ports
-        .byte_in(byte_in),
-        .in_trigger(in_trigger),
-        .all_in_ready(all_in_ready),
         .byte_out(byte_out),
-        .out_trigger(out_trigger),
-        .all_out_read(all_out_read),
+        .all_out_ready(all_out_ready),
+        .byte_in(byte_in),
+        .all_in_ready(all_in_ready),
+        .pc_data_put(pc_data_put),
+        .pc_data_req(pc_data_req),
     
         // input port
         .addr_i(brx_bespoke_io_core_addr),
@@ -328,12 +328,12 @@ module bespoke_io_core (
     input wire user_clk,
 
     // ports
-    input wire [7:0] byte_in,
-    input wire in_trigger,
-    input wire all_in_ready,
-    output reg [7:0] byte_out,
-    output reg out_trigger,
-    output reg all_out_read,
+    input wire [7:0] byte_out,
+    input wire all_out_ready,
+    output reg [7:0] byte_in,
+    output reg all_in_ready,
+    output reg pc_data_put,
+    output reg pc_data_req,
 
     // input port
     input wire [15:0] addr_i,
@@ -353,34 +353,35 @@ module bespoke_io_core (
     reg strobe = 0;
 
     // input probe buffers
-    reg [7:0] byte_in_buf = 0;
-    reg in_trigger_buf = 0;
-    reg all_in_ready_buf = 0;
+    reg [7:0] byte_out_buf = 0;
+    reg all_out_ready_buf = 0;
 
     // output probe buffers
-    reg [7:0] byte_out_buf = 0;
-    reg out_trigger_buf = 0;
-    reg all_out_read_buf = 0;
+    reg [7:0] byte_in_buf = 0;
+    reg all_in_ready_buf = 0;
+    reg pc_data_put_buf = 0;
+    reg pc_data_req_buf = 0;
 
     // output probe initial values
     initial begin
-        byte_out = 0;
-        out_trigger = 0;
-        all_out_read = 0;
+        byte_in = 0;
+        all_in_ready = 0;
+        pc_data_put = 0;
+        pc_data_req = 0;
     end
 
     // synchronize buffers and probes on strobe
     always @(posedge user_clk) begin
         if(strobe) begin
             // update input buffers from input probes
-            byte_in_buf <= byte_in;
-            in_trigger_buf <= in_trigger;
-            all_in_ready_buf <= all_in_ready;
+            byte_out_buf <= byte_out;
+            all_out_ready_buf <= all_out_ready;
 
             // update output buffers from output probes
-            byte_out <= byte_out_buf;
-            out_trigger <= out_trigger_buf;
-            all_out_read <= all_out_read_buf;
+            byte_in <= byte_in_buf;
+            all_in_ready <= all_in_ready_buf;
+            pc_data_put <= pc_data_put_buf;
+            pc_data_req <= pc_data_req_buf;
         end
     end
 
@@ -399,12 +400,12 @@ module bespoke_io_core (
                 case (addr_i)
                     BASE_ADDR + 0: data_o <= strobe;
 
-                    BASE_ADDR + 1: data_o <= byte_in_buf;
-                    BASE_ADDR + 2: data_o <= in_trigger_buf;
-                    BASE_ADDR + 3: data_o <= all_in_ready_buf;
-                    BASE_ADDR + 4: data_o <= byte_out_buf;
-                    BASE_ADDR + 5: data_o <= out_trigger_buf;
-                    BASE_ADDR + 6: data_o <= all_out_read_buf;
+                    BASE_ADDR + 1: data_o <= byte_out_buf;
+                    BASE_ADDR + 2: data_o <= all_out_ready_buf;
+                    BASE_ADDR + 3: data_o <= byte_in_buf;
+                    BASE_ADDR + 4: data_o <= all_in_ready_buf;
+                    BASE_ADDR + 5: data_o <= pc_data_put_buf;
+                    BASE_ADDR + 6: data_o <= pc_data_req_buf;
                 endcase
             end
 
@@ -413,9 +414,10 @@ module bespoke_io_core (
                 case (addr_i)
                     BASE_ADDR + 0: strobe <= data_i;
 
-                    BASE_ADDR + 4: byte_out_buf <= data_i;
-                    BASE_ADDR + 5: out_trigger_buf <= data_i;
-                    BASE_ADDR + 6: all_out_read_buf <= data_i;
+                    BASE_ADDR + 3: byte_in_buf <= data_i;
+                    BASE_ADDR + 4: all_in_ready_buf <= data_i;
+                    BASE_ADDR + 5: pc_data_put_buf <= data_i;
+                    BASE_ADDR + 6: pc_data_req_buf <= data_i;
                 endcase
             end
         end

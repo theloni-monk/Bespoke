@@ -1,1 +1,1 @@
-//WRITME: Dual FIFO point-wise addition
+//WRITEME: Dual FIFO point-wise addition

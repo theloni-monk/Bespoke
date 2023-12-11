@@ -20,8 +20,8 @@ bias_state state;
 logic signed [WorkingRegs-1:0][7:0] bias_regs;
 logic [$clog2(InVecLength/WorkingRegs)-1:0] bias_ptr;
 // assumes single-cycle fifo
-logic [$clog2(InVecLength)-1:0] vec_in_idx;
-logic [$clog2(InVecLength)-1:0] vec_out_idx; // InVecLength = OutVecLength, one-to-one map
+logic [$clog2(InVecLength):0] vec_in_idx;
+logic [$clog2(InVecLength):0] vec_out_idx; // InVecLength = OutVecLength, one-to-one map
 logic vec_op_complete;
 assign vec_op_complete = vec_out_idx == 0;
 
@@ -48,16 +48,18 @@ end
 
 always_ff @(posedge clk_in) begin
   if(rst_in) begin
-      vec_in_idx <= 0;
-      vec_out_idx <= WorkingRegs;
-      bias_ptr <= 0;
-      state <= WAITING;
+    vec_in_idx <= 0;
+    vec_out_idx <= WorkingRegs;
+    bias_ptr <= 0;
+    state <= WAITING;
+    req_chunk_in <= 0;
+    req_chunk_out <= 0;
   end else begin
     if(state == WAITING) begin
         if(in_data_ready) begin
-          vec_in_idx <= WorkingRegs;
-          vec_out_idx <= WorkingRegs;
-          req_chunk_in <= 1;
+          vec_in_idx <= WorkingRegs >= InVecLength ? 0: WorkingRegs;
+          vec_out_idx <= WorkingRegs >= InVecLength ? 0 : WorkingRegs;
+          req_chunk_in <= WorkingRegs < InVecLength;
           req_chunk_out <= 1;
           bias_ptr <= InVecLength/WorkingRegs > 1;
           state <= PROCESSING;
@@ -72,8 +74,8 @@ always_ff @(posedge clk_in) begin
       if(vec_op_complete) begin
         req_chunk_in <= in_data_ready;
         state <= in_data_ready ? PROCESSING : WAITING;
-        req_chunk_in <= 0;
-        req_chunk_out <= 0;
+        vec_out_idx <= WorkingRegs;
+        req_chunk_out <= in_data_ready;
       end else begin
         bias_ptr <= bias_ptr + 1;
         req_chunk_in <= 1;
