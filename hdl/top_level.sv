@@ -14,30 +14,21 @@ module top_level(
   logic sys_rst;
   assign sys_rst = btn[0];
 
-  logic [7:0] byte_in;
-  logic in_trigger;
-  logic prev_in_trigger;
-  logic all_in_ready;
-  logic prev_all_in_ready;
+  logic in_data_ready_master;
 
-  logic [7:0] byte_out;
-  logic out_trigger;
-  logic all_out_ready;
+  `include "dummy_model.sv"
+
   manta manta_inst (
     .clk(clk_100mhz),
     .rx(uart_rxd),
     .tx(uart_txd),
-    .byte_in(byte_in),
-    .in_trigger(in_trigger),
-    .all_in_ready(all_in_ready),
-    .byte_out(byte_out),
-    .out_trigger(out_trigger),
-    .all_out_read(all_out_ready));
-
-  always_ff @(posedge clk_100mhz) begin
-    
-  end
-
+    .byte_in(in_data_master),
+    .pc_data_put(wr_in_master),
+    .all_in_ready(in_data_ready_master),
+    .byte_out(out_data_master),
+    .pc_data_req(rd_out_master),
+    .all_out_ready(ml_inf_valid));
+  
 endmodule // top_level
 
 `default_nettype wire

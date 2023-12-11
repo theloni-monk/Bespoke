@@ -4,15 +4,17 @@ cores:
   bespoke_io_core:
     type: io
 
-    inputs:
-      byte_in: 8
-      in_trigger: 1
-      all_in_ready: 1
-
     outputs:
+      byte_in: 8
+      all_in_ready: 1
+      pc_data_put: 1
+      pc_data_req: 1
+
+    inputs:
       byte_out: 8
-      out_trigger: 1
-      all_out_read: 1
+      all_out_ready: 1
+
+
 uart:
   port: "COM12"
   baudrate: 3000000

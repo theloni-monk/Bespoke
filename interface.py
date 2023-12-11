@@ -1,7 +1,7 @@
 import time
 from manta import Manta
 m = Manta('lab08.yaml') # create manta python instance using yaml
-
+#WRITEME: in-situ verification interface
 val3 = 150
 val4 = 12
 m.lab8_io_core.val3_out.set(val3) # set the value val3_out to be val3
