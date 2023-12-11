@@ -36,7 +36,7 @@ module bias_tb();
 
   logic bias_data_ready;
   logic outvecvalid;
-  Bias #(.InVecLength(8), .WorkingRegs(4), .BiasFile("data/bias_out.mem")) uut(
+  Bias #(.InVecLength(8), .WorkingRegs(4), .BiasFile("data/bias_tb_mat.mem")) uut(
     .clk_in(clk_100mhz),
     .rst_in(sys_rst),
     .in_data_ready(bias_data_ready),

@@ -79,10 +79,10 @@ module relu_tb();
     wr_en_0 = 0;
     rd_en_1 = 1;
     for (byte i = 0; i<4; i= i+ 1)begin
-      $display("read chunk %d read byte %b", i, rd_data_1[0]);
-      $display("read chunk %d read byte %b", i, rd_data_1[1]);
-      $display("read chunk %d read byte %b", i, rd_data_1[2]);
-      $display("read chunk %d read byte %b", i, rd_data_1[3]);
+      $display("read chunk %d read byte %d", i, rd_data_1[0]);
+      $display("read chunk %d read byte %d", i, rd_data_1[1]);
+      $display("read chunk %d read byte %d", i, rd_data_1[2]);
+      $display("read chunk %d read byte %d", i, rd_data_1[3]);
       #10;
     end
     rd_en_1 = 0;
