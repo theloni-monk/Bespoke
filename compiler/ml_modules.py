@@ -13,7 +13,8 @@ class Var:
         if self.defined:
             return ""
         self.defined = True
-        return f"logic {f'[{self.num_bytes-1}:0][7:0]' if self.num_bytes else ''} {self.name};"
+        bytes_dcl = f"{f'[{self.num_bytes-1}:0]' if self.num_bytes > 1 else ''}[7:0]"
+        return f"logic {bytes_dcl if self.num_bytes else ''} {self.name};"
 
     def __repr__(self):
         return "0" if self.tie_zero else self.name
@@ -95,6 +96,7 @@ class VecFIFO(MLModule):
         self.write_out_data = Var(f"rd_data_{instance_num}", False, bytes_per_write, False)
 
         self.wrap_rd = Var(f"wrap_rd_{instance_num}", False, 0, False)
+        self.working_regs = -1
 
     @property
     def variables(self):

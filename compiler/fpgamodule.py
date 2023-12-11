@@ -25,6 +25,7 @@ def gen_bram_file(path, read_bytes, data):
                 for i in range(read_bytes):
                     f.write(f'{int(data[x*read_bytes+i]):02x}')
 
+#WRITEME: replace first and last modules with top level names so they can be accessed regardless of model internals
 class FPGAModule():
 
     model: onnx.ModelProto
@@ -61,40 +62,71 @@ class FPGAModule():
 
     def alloc_regs(self):
         num_ml_mods = (len(self.modules)-1)//2
+
         for mod in self.modules:
             mod.working_regs = min(mod.in_vec_size, self.spec.num_reg//num_ml_mods)
             mod.in_data.num_bytes = mod.working_regs
-            mod.write_out_data.num_bytes = min(mod.working_regs, mod.out_vec_size if type(mod) == MVProd else mod.working_regs)
+            if type(mod) == MVProd:
+                mod.write_out_data.num_bytes = 1
+            else:
+                mod.write_out_data.num_bytes = mod.working_regs
+
         self.modules[0].bytes_per_read = self.modules[1].working_regs
         self.modules[0].bytes_per_write = 1
-        for idx, fifo in enumerate(self.modules[1:-2]):
+        self.modules[0].in_data.num_bytes = 1
+        for idx, fifo in enumerate(self.modules):
+            if idx == 0 or idx == len(self.modules)-1:
+                continue
             if type(fifo) != VecFIFO:
                 continue
-            fifo.bytes_per_write = min(self.modules[idx-1].working_regs, mod.out_vec_size if type(mod) == MVProd else mod.working_regs)
+            fifo.bytes_per_write = 1 if type(self.modules[idx-1]) == MVProd else self.modules[idx-1].working_regs
+            if type(self.modules[idx-1]) == MVProd: #HACK
+                fifo.in_data.num_bytes = 1
             fifo.bytes_per_read = self.modules[idx+1].working_regs
         self.modules[-1].bytes_per_write = self.modules[-2].working_regs
         self.modules[-1].bytes_per_read = 1
+        self.modules[-1].write_out_data.num_bytes = 1
 
     def make_sv(self):
         input_fifo = self.modules[0]
+        input_fifo.req_chunk_in.name = "wr_in_master"
+        input_fifo.in_data.name = "in_data_master"
+        input_fifo.clk_in = Var("clk_100mhz", True, 0, False)
+        input_fifo.rst_in = Var("sys_rst", True, 0, False)
+
         output_fifo = self.modules[-1]
+        output_fifo.req_chunk_out.name = "rd_out_master"
+        output_fifo.write_out_data.name = "out_data_master"
+        output_fifo.clk_in = Var("clk_100mhz", True, 0, False)
+        output_fifo.rst_in = Var("sys_rst", True, 0, False)
+
+        first_proc_node = self.modules[1]
+        first_proc_node.in_data_ready.name = "in_data_ready"
+        first_proc_node.in_data_ready.defined = True
+
+        last_proc_node = self.modules[-2]
+        last_proc_node.out_vec_valid.name = "out_data_ready"
+        last_proc_node.out_vec_valid.defined = True
         return f"""
 {input_fifo.systemverilog()}
 {output_fifo.systemverilog()}
+
 module MLInference(
     input wire clk_in,
     input wire rst_in,
     input wire in_data_ready,
     output logic out_data_ready
 );
+
   {'''
 '''.join([mod.systemverilog() for mod in self.modules[1:-1]])}
 endmodule;
+
 logic ml_inf_valid;
 MLInference ml_inf(
-    .clk_in(),
-    .rst_in(),
-    .in_data_ready(),
+    .clk_in(clk_100mhz),
+    .rst_in(sys_rst),
+    .in_data_ready(in_data_ready_master),
     .out_data_ready(ml_inf_valid)
 );
 """
