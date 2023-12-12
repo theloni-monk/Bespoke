@@ -1,13 +1,17 @@
 from typing import List
 from dataclasses import dataclass
+from functools import reduce
 
+def factors(n):
+    return set(reduce(list.__add__,
+                ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
 import onnx
 
 from .ml_modules import *
 
 @dataclass
 class FPGASpec():
-    num_dsp48: int
+    num_dsp: int
     num_reg: int
     total_bram: int
     max_clock: int
@@ -25,7 +29,15 @@ def gen_bram_file(path, read_bytes, data):
                 for i in range(read_bytes):
                     f.write(f'{int(data[x*read_bytes+i]):02x}')
 
-#WRITEME: replace first and last modules with top level names so they can be accessed regardless of model internals
+def next_smallest_factor(vec_size, max_factor):
+    largest_under = 1
+    for i in sorted(factors(vec_size)):
+        if i < max_factor:
+            largest_under = i
+        else:
+            break
+    return largest_under
+
 class FPGAModule():
 
     model: onnx.ModelProto
@@ -62,14 +74,15 @@ class FPGAModule():
 
     def alloc_regs(self):
         num_ml_mods = (len(self.modules)-1)//2
-
+        num_mult_mods = sum(1 if type(mod) == MVProd else 0 for mod in self.modules)
         for mod in self.modules:
-            mod.working_regs = min(mod.in_vec_size, self.spec.num_reg//num_ml_mods)
-            mod.in_data.num_bytes = mod.working_regs
             if type(mod) == MVProd:
+                mod.working_regs = next_smallest_factor(mod.in_vec_size, self.spec.num_dsp//num_ml_mods)
                 mod.write_out_data.num_bytes = 1
             else:
+                mod.working_regs = next_smallest_factor(mod.in_vec_size, self.spec.num_reg//num_ml_mods)
                 mod.write_out_data.num_bytes = mod.working_regs
+            mod.in_data.num_bytes = mod.working_regs
 
         self.modules[0].bytes_per_read = self.modules[1].working_regs
         self.modules[0].bytes_per_write = 1
@@ -108,6 +121,8 @@ class FPGAModule():
         last_proc_node.out_vec_valid.name = "out_data_ready"
         last_proc_node.out_vec_valid.defined = True
         return f"""
+localparam INVECWIDTH = {self.modules[0].in_vec_size};
+localparam OUTVECWIDTH = {self.modules[-1].in_vec_size};
 {input_fifo.systemverilog()}
 {output_fifo.systemverilog()}
 

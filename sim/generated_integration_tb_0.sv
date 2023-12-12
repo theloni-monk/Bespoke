@@ -34,17 +34,17 @@ module generated_integration_tb_0();
     sys_rst = 0;
     #10;
     wr_in_master = 1;
-    for (byte i = 0; i<8; i=i+1)begin
-      $display("write chunk %d writing %d", i, 0);
-      in_data_master = 0;
+    for (byte unsigned i = 0; i<INVECWIDTH; i=i+1)begin
+      $display("write chunk %d writing 1", i);
+      in_data_master = 1;
       #10;
     end
     in_data_ready_master = 1;
     #10
     in_data_ready_master = 0;
-    #1500;
+    #150000;
     rd_out_master = 1;
-    for (byte i = 0; i<8; i = i+ 1)begin
+    for (integer i = 0; i<OUTVECWIDTH; i = i+ 1)begin
       $display("read chunk %d read %d", i, $signed(out_data_master));
       #10;
     end
@@ -53,6 +53,6 @@ module generated_integration_tb_0();
     $display("Simulation finished, rvecvalid? %b", ml_inf_valid);
     $finish;
   end
-endmodule
 
+endmodule;
 `default_nettype wire

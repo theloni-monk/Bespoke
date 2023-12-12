@@ -49,7 +49,7 @@ def parse_model(onnx_model, initdim,  spec):
 
         fpga_module.modules[-1].out_nodes.append(mod)
         fpga_module.modules.append(mod)
-        fifo = ml_modules.VecFIFO([mod], [], num_fifos, currdim, -1, -1, 2, fpga_module.clk, fpga_module.rst)
+        fifo = ml_modules.VecFIFO([mod], [], num_fifos, currdim, -1, -1, 1, fpga_module.clk, fpga_module.rst)
         num_fifos += 1
         mod.req_chunk_out = fifo.req_chunk_in
         mod.write_out_data = fifo.in_data
