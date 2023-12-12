@@ -33,7 +33,7 @@ def parse_model(onnx_model, initdim,  spec):
         mod.in_vec_size = currdim
 
         if node.op_type == "Add" or node.op_type == "MatMulInteger":
-            mod.bram = onnx.numpy_helper.to_array(wdict[node.input[1]]).astype(np.int8).view(np.uint8)
+            mod.bram = onnx.numpy_helper.to_array(wdict[node.input[1]]).astype(np.int8).view(np.uint8).transpose()
         if node.op_type == "MatMulInteger":
             newdim = wdict[node.input[1]].dims[-1]
             mod.out_vec_size = newdim

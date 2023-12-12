@@ -7,12 +7,12 @@ module PipeAdderTree #(parameter Elements = 12)(
   output logic signed [7:0] out
 );
 generate
-  if(Elements == 2) begin
+  if(Elements == 0) begin
+    assign out = 0;
+  end else if(Elements == 1) begin
+    assign out = in;
+  end else if(Elements == 2) begin
     assign out = in[0] + in[1];
-  end else if(Elements == 3) begin
-    assign out = in[0] + in[1] + in[2];
-  end else if(Elements == 4) begin
-    assign out = in[0] + in[1] + in[2] + in[3];
   end else begin
     always_ff @(posedge clk_in) begin
       leftin <= in[Elements-1:Elements/2];

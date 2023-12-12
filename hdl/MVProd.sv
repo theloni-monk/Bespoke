@@ -53,7 +53,7 @@ always_comb begin
   for(integer i = 0; i < WorkingRegs; i = i+1) product_regs[i] = (vector_regs[WorkingRegs-1-i] * weight_regs[i]);
 end
 
-localparam DotWaitCycles = $clog2(WorkingRegs); // -1 because we break at 4
+localparam DotWaitCycles = $clog2(WorkingRegs);
 logic [DotWaitCycles:0] dot_cycles;
 PipeAdderTree #(.Elements(WorkingRegs)) atree (
   .clk_in(clk_in),
@@ -97,7 +97,7 @@ always_ff @(posedge clk_in) begin
     for(integer i = 0; i< WorkingRegs; i= i+1) vector_regs[i] <= in_data[i];
     weight_ptr <= weight_ptr + 1 >= InVecLength*OutVecLength/WorkingRegs ? 0 : weight_ptr + 1;
     if(row_op_complete) begin
-      req_chunk_in <= ~((~all_op_complete) & WorkingRegs < InVecLength);
+      req_chunk_in <= ~((~all_op_complete) & WorkingRegs < InVecLength) & WorkingRegs < InVecLength;
       req_chunk_ptr_rst <= (~all_op_complete) & WorkingRegs < InVecLength;
       dot_cycles <= 1;
       state <= FLUSHING;
@@ -109,10 +109,10 @@ always_ff @(posedge clk_in) begin
     end
     accumulator <= accumulator + dot;
   end else if(state==FLUSHING) begin
-    if(dot_cycles == DotWaitCycles-1) begin
+    if(dot_cycles == DotWaitCycles) begin
       dot_cycles <= 0;
       req_chunk_out <= 1;
-      write_out_data <= accumulator + dot;
+      write_out_data <= accumulator + dot;//;
       if(all_op_complete) begin
         out_vector_valid <= 1;
         if(in_data_ready)begin

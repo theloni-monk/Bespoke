@@ -37,7 +37,7 @@ module mvprod_tb();
 
   logic mv_data_ready = 0;
   logic outvecvalid;
-  MVProd #(.InVecLength(8), .OutVecLength(8), .WorkingRegs(2), .WeightFile("mvprod_tb_mat.mem")) uut(
+  MVProd #(.InVecLength(8), .OutVecLength(8), .WorkingRegs(2), .WeightFile("data/mvprod_tb_mat.mem")) uut(
     .clk_in(clk_100mhz),
     .rst_in(sys_rst),
     .in_data_ready(mv_data_ready),
