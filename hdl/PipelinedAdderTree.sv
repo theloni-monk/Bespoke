@@ -3,30 +3,36 @@
 
 module PipeAdderTree #(parameter Elements = 12)(
   input wire clk_in,
-  input wire [Elements-1:0][9:0] in,
-  output logic signed [9:0] out
+  input wire [Elements-1:0][7:0] in,
+  output logic signed [7:0] out
 );
 generate
   if(Elements == 2) begin
-    always_ff @(posedge clk_in) out <= in[0] + in[1];
+    assign out = in[0] + in[1];
   end else if(Elements == 3) begin
-    always_ff @(posedge clk_in) out <= in[0] + in[1] + in[2];
+    assign out = in[0] + in[1] + in[2];
   end else if(Elements == 4) begin
-    always_ff @(posedge clk_in) out <= in[0] + in[1] + in[2] + in[3];
+    assign out = in[0] + in[1] + in[2] + in[3];
   end else begin
-    logic [9:0] right;
-    logic [9:0] left;
+    always_ff @(posedge clk_in) begin
+      leftin <= in[Elements-1:Elements/2];
+      rightin <= in[Elements/2-1:0];
+    end
+    logic [Elements-(Elements/2)-1:0][7:0] leftin;
+    logic [(Elements/2)-1:0][7:0] rightin;
+    logic [7:0] leftout;
+    logic [7:0] rightout;
     PipeAdderTree #(.Elements(Elements - Elements/2)) ladder (
       .clk_in(clk_in),
-      .in(in[Elements-1:Elements/2]),
-      .out(left)
+      .in(leftin),
+      .out(leftout)
     );
     PipeAdderTree #(.Elements(Elements/2)) radder (
       .clk_in(clk_in),
-      .in(in[Elements/2-1:0]),
-      .out(right)
+      .in(rightin),
+      .out(rightout)
     );
-    always_ff @(posedge clk_in) out <= left + right;
+    assign out = leftout + rightout;
   end
 endgenerate
 endmodule
