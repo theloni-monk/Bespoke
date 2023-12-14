@@ -21,7 +21,7 @@ def parse_model(onnx_model, initdim,  spec):
     currdim = initdim
 
     # shitty non-recursive construction
-    fpga_module.modules = [ml_modules.VecFIFO([], [], 0, initdim, -1, -1, 4, fpga_module.clk, fpga_module.rst)]
+    fpga_module.modules = [ml_modules.VecFIFO([], [], 0, initdim, -1, -1, 1, fpga_module.clk, fpga_module.rst)]
     num_fifos = 1
     for idx, node in enumerate(onnx_model.graph.node):
         try:

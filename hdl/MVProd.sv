@@ -109,10 +109,10 @@ always_ff @(posedge clk_in) begin
     end
     accumulator <= accumulator + dot;
   end else if(state==FLUSHING) begin
-    if(dot_cycles == DotWaitCycles) begin
+    if(dot_cycles == DotWaitCycles + 1) begin
       dot_cycles <= 0;
       req_chunk_out <= 1;
-      write_out_data <= accumulator + dot;//;
+      write_out_data <= accumulator;//;
       if(all_op_complete) begin
         out_vector_valid <= 1;
         if(in_data_ready)begin

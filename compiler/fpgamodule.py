@@ -73,14 +73,14 @@ class FPGAModule():
         assert self.avail_bram > 0, "Insufficient BRAM"
 
     def alloc_regs(self):
-        num_ml_mods = (len(self.modules)-1)//2
         num_mult_mods = sum(1 if type(mod) == MVProd else 0 for mod in self.modules)
+        mult_cycles = self.modules[2].in_vec_size * self.modules[1].in_vec_size // next_smallest_factor(self.modules[1].in_vec_size, self.spec.num_dsp // num_mult_mods + 1)
         for mod in self.modules:
             if type(mod) == MVProd:
-                mod.working_regs = next_smallest_factor(mod.in_vec_size, self.spec.num_dsp//num_ml_mods)
+                mod.working_regs = next_smallest_factor(mod.in_vec_size, self.spec.num_dsp//num_mult_mods + 1)
                 mod.write_out_data.num_bytes = 1
             else:
-                mod.working_regs = next_smallest_factor(mod.in_vec_size, self.spec.num_reg//num_ml_mods)
+                mod.working_regs = max(1, mod.in_vec_size // mult_cycles) #next_smallest_factor(mod.in_vec_size, self.spec.num_reg//num_ml_mods + 1)
                 mod.write_out_data.num_bytes = mod.working_regs
             mod.in_data.num_bytes = mod.working_regs
 
@@ -93,7 +93,7 @@ class FPGAModule():
             if type(fifo) != VecFIFO:
                 continue
             fifo.bytes_per_write = 1 if type(self.modules[idx-1]) == MVProd else self.modules[idx-1].working_regs
-            if type(self.modules[idx-1]) == MVProd: #HACK
+            if type(self.modules[idx-1]) == MVProd:
                 fifo.in_data.num_bytes = 1
             fifo.bytes_per_read = self.modules[idx+1].working_regs
         self.modules[-1].bytes_per_write = self.modules[-2].working_regs

@@ -1,18 +1,16 @@
 `timescale 1ps/1ps
 `default_nettype none
-
+//FIXME: calc exactly how many cycles for correct result
 module PipeAdderTree #(parameter Elements = 12)(
   input wire clk_in,
   input wire [Elements-1:0][7:0] in,
   output logic signed [7:0] out
 );
 generate
-  if(Elements == 0) begin
-    assign out = 0;
-  end else if(Elements == 1) begin
-    assign out = in;
+  if(Elements == 1) begin
+    always_ff @(posedge clk_in) out <= in;
   end else if(Elements == 2) begin
-    assign out = in[0] + in[1];
+    always_ff @(posedge clk_in) out <= in[0] + in[1];
   end else begin
     always_ff @(posedge clk_in) begin
       leftin <= in[Elements-1:Elements/2];
